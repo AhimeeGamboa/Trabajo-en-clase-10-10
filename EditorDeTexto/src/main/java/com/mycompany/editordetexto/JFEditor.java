@@ -4,6 +4,9 @@
  */
 package com.mycompany.editordetexto;
 
+import java.nio.file.Path;
+import javax.swing.JFileChooser;
+
 /**
  *
  * @author celia
@@ -103,6 +106,7 @@ public class JFEditor extends javax.swing.JFrame {
         File.add(menuItemNuevo);
 
         menuItemAbrir.setText("Abrir");
+        menuItemAbrir.addActionListener(this::menuItemAbrirActionPerformed);
         File.add(menuItemAbrir);
 
         menuItemGuardar.setText("Guardar");
@@ -134,20 +138,43 @@ public class JFEditor extends javax.swing.JFrame {
     
     private void NegritasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NegritasActionPerformed
 
-        // TODO add your handling code here:
     }//GEN-LAST:event_NegritasActionPerformed
 
     private void ItalicsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ItalicsActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_ItalicsActionPerformed
 
     private void menuItemNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemNuevoActionPerformed
-
+        java.io.File nuevoArchivo = new java.io.File("mi_archivo_nuevo.rtf");
+        
+        try {
+            if (nuevoArchivo.createNewFile()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Archivo creado");
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "El archivo ya existía");
+            }
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+    }
     }//GEN-LAST:event_menuItemNuevoActionPerformed
 
     private void menuItemGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemGuardarActionPerformed
 
+        try (java.io.FileWriter escritor = new java.io.FileWriter("mi_archivo_nuevo.rtf")) {
+            escritor.write(jEditorPane.getText()); 
+        }
+        catch (java.io.IOException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Error al guardar el archivo: " + e.getMessage(), 
+                    "Error", 
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_menuItemGuardarActionPerformed
+    
+    
+    private void menuItemAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemAbrirActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_menuItemAbrirActionPerformed
     
     /**
      * @param args the command line arguments
