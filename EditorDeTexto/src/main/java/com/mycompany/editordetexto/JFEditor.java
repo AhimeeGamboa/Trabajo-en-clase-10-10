@@ -5,7 +5,9 @@
 package com.mycompany.editordetexto;
 
 import java.nio.file.Path;
+import javax.swing.Action;
 import javax.swing.JFileChooser;
+import javax.swing.text.StyledEditorKit;
 
 /**
  *
@@ -137,9 +139,24 @@ public class JFEditor extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void NegritasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NegritasActionPerformed
+        int start = jEditorPane.getSelectionStart();
+        int end = jEditorPane.getSelectionEnd();
+        int length = end - start;
 
+        // Verificar que realmente haya texto seleccionado
+        if (length > 0) {
+            // Obtener el documento con soporte de estilos
+            javax.swing.text.StyledDocument doc = (javax.swing.text.StyledDocument) jEditorPane.getDocument();
+
+            // Crear un conjunto de atributos y forzar la negrita a true
+            javax.swing.text.SimpleAttributeSet attrs = new javax.swing.text.SimpleAttributeSet();
+            javax.swing.text.StyleConstants.setBold(attrs, true);
+
+            // Aplicar los atributos al rango seleccionado (el último parámetro 'false' preserva otros estilos como cursiva o tamaño)
+            doc.setCharacterAttributes(start, length, attrs, false);
+        }
     }//GEN-LAST:event_NegritasActionPerformed
-
+    
     private void ItalicsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ItalicsActionPerformed
         
     }//GEN-LAST:event_ItalicsActionPerformed
