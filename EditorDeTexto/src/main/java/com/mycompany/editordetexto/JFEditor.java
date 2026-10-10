@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.text.StyledEditorKit;
-
 /**
  *
  * @author celia
@@ -25,10 +24,11 @@ public class JFEditor extends javax.swing.JFrame {
      * Creates new form JFEditor
      */
     public JFEditor() {
-
         initComponents();
         setLocationRelativeTo(null);
         setResizable(false);
+        jEditorPane.setContentType("text/rtf");
+        jEditorPane.setEditorKit(new javax.swing.text.rtf.RTFEditorKit());
     }
 
     /**
@@ -139,58 +139,74 @@ public class JFEditor extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void NegritasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NegritasActionPerformed
-        int start = jEditorPane.getSelectionStart();
-        int end = jEditorPane.getSelectionEnd();
-        int length = end - start;
-
-        // Verificar que realmente haya texto seleccionado
-        if (length > 0) {
-            // Obtener el documento con soporte de estilos
-            javax.swing.text.StyledDocument doc = (javax.swing.text.StyledDocument) jEditorPane.getDocument();
-
-            // Crear un conjunto de atributos y forzar la negrita a true
-            javax.swing.text.SimpleAttributeSet attrs = new javax.swing.text.SimpleAttributeSet();
-            javax.swing.text.StyleConstants.setBold(attrs, true);
-
-            // Aplicar los atributos al rango seleccionado (el último parámetro 'false' preserva otros estilos como cursiva o tamaño)
-            doc.setCharacterAttributes(start, length, attrs, false);
-        }
+        new javax.swing.text.StyledEditorKit.BoldAction().actionPerformed(evt);
     }//GEN-LAST:event_NegritasActionPerformed
     
     private void ItalicsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ItalicsActionPerformed
-        
+        new javax.swing.text.StyledEditorKit.ItalicAction().actionPerformed(evt);
     }//GEN-LAST:event_ItalicsActionPerformed
 
     private void menuItemNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemNuevoActionPerformed
-        java.io.File nuevoArchivo = new java.io.File("mi_archivo_nuevo.rtf");
-        
-        try {
-            if (nuevoArchivo.createNewFile()) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Archivo creado");
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "El archivo ya existía");
-            }
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
-    }
+        jEditorPane.setText("");
     }//GEN-LAST:event_menuItemNuevoActionPerformed
 
     private void menuItemGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemGuardarActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Guardar archivo RTF");
+    fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos RTF (*.rtf)", "rtf"));
 
-        try (java.io.FileWriter escritor = new java.io.FileWriter("mi_archivo_nuevo.rtf")) {
-            escritor.write(jEditorPane.getText()); 
+    int userSelection = fileChooser.showSaveDialog(this);
+
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+        java.io.File archivoGuardar = fileChooser.getSelectedFile();
+        
+        
+        if (!archivoGuardar.getName().toLowerCase().endsWith(".rtf")) {
+            archivoGuardar = new java.io.File(archivoGuardar.getAbsolutePath() + ".rtf");
         }
-        catch (java.io.IOException e) {
+
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(archivoGuardar)) {
+            javax.swing.text.rtf.RTFEditorKit rtfKit = (javax.swing.text.rtf.RTFEditorKit) jEditorPane.getEditorKit();
+            javax.swing.text.StyledDocument doc = (javax.swing.text.StyledDocument) jEditorPane.getDocument();
+            
+            
+            rtfKit.write(fos, doc, 0, doc.getLength());
+            
+            javax.swing.JOptionPane.showMessageDialog(this, "Archivo guardado exitosamente");
+        } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Error al guardar el archivo: " + e.getMessage(), 
+                    "Error al guardar: " + e.getMessage(), 
                     "Error", 
                     javax.swing.JOptionPane.ERROR_MESSAGE);
         }
+    }
     }//GEN-LAST:event_menuItemGuardarActionPerformed
     
     
     private void menuItemAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemAbrirActionPerformed
-        // TODO add your handling code here:
+        JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Abrir archivo RTF");
+    fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos RTF (*.rtf)", "rtf"));
+
+    int userSelection = fileChooser.showOpenDialog(this);
+
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+        java.io.File archivoAbrir = fileChooser.getSelectedFile();
+
+        try (java.io.FileInputStream fis = new java.io.FileInputStream(archivoAbrir)) {
+            javax.swing.text.rtf.RTFEditorKit rtfKit = new javax.swing.text.rtf.RTFEditorKit();
+            jEditorPane.setContentType("text/rtf");
+            jEditorPane.setEditorKit(rtfKit);
+            
+            
+            rtfKit.read(fis, jEditorPane.getDocument(), 0);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Error al abrir: " + e.getMessage(), 
+                    "Error", 
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
     }//GEN-LAST:event_menuItemAbrirActionPerformed
     
     /**
