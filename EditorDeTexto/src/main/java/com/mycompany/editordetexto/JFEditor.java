@@ -72,6 +72,8 @@ public class JFEditor extends javax.swing.JFrame {
         Italics.setText("K");
         Italics.addActionListener(this::ItalicsActionPerformed);
 
+        jSpinner1.addChangeListener(this::jSpinner1StateChanged);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -85,7 +87,7 @@ public class JFEditor extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(Italics, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -185,29 +187,51 @@ public class JFEditor extends javax.swing.JFrame {
     
     private void menuItemAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemAbrirActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-    fileChooser.setDialogTitle("Abrir archivo RTF");
-    fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos RTF (*.rtf)", "rtf"));
+        fileChooser.setDialogTitle("Abrir archivo RTF");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos RTF (*.rtf)", "rtf"));
 
-    int userSelection = fileChooser.showOpenDialog(this);
+        int userSelection = fileChooser.showOpenDialog(this);
 
-    if (userSelection == JFileChooser.APPROVE_OPTION) {
-        java.io.File archivoAbrir = fileChooser.getSelectedFile();
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            java.io.File archivoAbrir = fileChooser.getSelectedFile();
 
-        try (java.io.FileInputStream fis = new java.io.FileInputStream(archivoAbrir)) {
-            javax.swing.text.rtf.RTFEditorKit rtfKit = new javax.swing.text.rtf.RTFEditorKit();
-            jEditorPane.setContentType("text/rtf");
-            jEditorPane.setEditorKit(rtfKit);
-            
-            
-            rtfKit.read(fis, jEditorPane.getDocument(), 0);
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Error al abrir: " + e.getMessage(), 
-                    "Error", 
-                    javax.swing.JOptionPane.ERROR_MESSAGE);
+            try (java.io.FileInputStream fis = new java.io.FileInputStream(archivoAbrir)) {
+                javax.swing.text.rtf.RTFEditorKit rtfKit = new javax.swing.text.rtf.RTFEditorKit();
+                jEditorPane.setContentType("text/rtf");
+                jEditorPane.setEditorKit(rtfKit);
+
+
+                rtfKit.read(fis, jEditorPane.getDocument(), 0);
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                        "Error al abrir: " + e.getMessage(), 
+                        "Error", 
+                        javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
         }
-    }
     }//GEN-LAST:event_menuItemAbrirActionPerformed
+
+    private void jSpinner1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinner1StateChanged
+        int newSize = (Integer) jSpinner1.getValue();
+    
+
+        javax.swing.text.MutableAttributeSet attrs = new javax.swing.text.SimpleAttributeSet();
+        javax.swing.text.StyleConstants.setFontSize(attrs, newSize);
+
+
+        int start = jEditorPane.getSelectionStart();
+        int end = jEditorPane.getSelectionEnd();
+
+        if (start != end) {
+
+            javax.swing.text.StyledDocument doc = (javax.swing.text.StyledDocument) jEditorPane.getDocument();
+            doc.setCharacterAttributes(start, end - start, attrs, false);
+        } else {
+
+            javax.swing.text.StyledEditorKit kit = (javax.swing.text.StyledEditorKit) jEditorPane.getEditorKit();
+            kit.getInputAttributes().addAttributes(attrs);
+        }
+    }//GEN-LAST:event_jSpinner1StateChanged
     
     /**
      * @param args the command line arguments
